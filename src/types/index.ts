@@ -10,6 +10,10 @@ import {
   updatePedidoSchema,
   createAvaliacaoSchema,
   updateAvaliacaoSchema,
+  createServicoSchema,
+  updateServicoSchema,
+  createTarefaSemanalSchema,
+  updateTarefaSemanalSchema,
 } from "../schemas";
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;
@@ -22,3 +26,7 @@ export type CreatePedidoInput = z.infer<typeof createPedidoSchema>;
 export type UpdatePedidoInput = z.infer<typeof updatePedidoSchema>;
 export type CreateAvaliacaoInput = z.infer<typeof createAvaliacaoSchema>;
 export type UpdateAvaliacaoInput = z.infer<typeof updateAvaliacaoSchema>;
+export type CreateServicoInput = z.infer<typeof createServicoSchema>;
+export type UpdateServicoInput = z.infer<typeof updateServicoSchema>;
+export type CreateTarefaSemanalInput = z.infer<typeof createTarefaSemanalSchema>;
+export type UpdateTarefaSemanalInput = z.infer<typeof updateTarefaSemanalSchema>;

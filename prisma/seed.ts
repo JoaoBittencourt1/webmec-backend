@@ -1,4 +1,4 @@
-import { PrismaClient, PedidoStatus, UserRole } from "@prisma/client";
+import { PrismaClient, PedidoStatus, UserRole, DiaSemana, PrioridadeTarefa } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -7,7 +7,9 @@ async function main() {
   console.log("Iniciando seed...");
 
   await prisma.avaliacao.deleteMany();
+  await prisma.tarefaSemanal.deleteMany();
   await prisma.pedido.deleteMany();
+  await prisma.servico.deleteMany();
   await prisma.cliente.deleteMany();
   await prisma.mecanico.deleteMany();
   await prisma.user.deleteMany();
@@ -248,12 +250,107 @@ async function main() {
     }),
   ]);
 
+  const servicos = await Promise.all([
+    prisma.servico.create({
+      data: {
+        nome: "Troca de Óleo",
+        descricao: "Troca de óleo do motor e filtro de óleo",
+        preco: 180.0,
+        duracaoMinutos: 45,
+      },
+    }),
+    prisma.servico.create({
+      data: {
+        nome: "Revisão de Freios",
+        descricao: "Inspeção e troca de pastilhas e discos de freio",
+        preco: 420.0,
+        duracaoMinutos: 120,
+      },
+    }),
+    prisma.servico.create({
+      data: {
+        nome: "Alinhamento e Balanceamento",
+        descricao: "Alinhamento de direção e balanceamento das rodas",
+        preco: 150.0,
+        duracaoMinutos: 60,
+      },
+    }),
+    prisma.servico.create({
+      data: {
+        nome: "Recarga de Ar Condicionado",
+        descricao: "Recarga de gás e verificação do sistema de climatização",
+        preco: 290.0,
+        duracaoMinutos: 90,
+      },
+    }),
+    prisma.servico.create({
+      data: {
+        nome: "Diagnóstico Eletrônico",
+        descricao: "Leitura de códigos de falha e diagnóstico computadorizado",
+        preco: 120.0,
+        duracaoMinutos: 30,
+        ativo: true,
+      },
+    }),
+  ]);
+
+  const tarefasSemanais = await Promise.all([
+    prisma.tarefaSemanal.create({
+      data: {
+        titulo: "Organizar ferramentas",
+        descricao: "Conferir e organizar o kit de ferramentas da bancada",
+        diaSemana: DiaSemana.SEGUNDA,
+        mecanicoId: mecanicos[0].id,
+        prioridade: PrioridadeTarefa.MEDIA,
+      },
+    }),
+    prisma.tarefaSemanal.create({
+      data: {
+        titulo: "Verificar estoque de peças",
+        descricao: "Conferir estoque mínimo de filtros, óleos e pastilhas",
+        diaSemana: DiaSemana.TERCA,
+        mecanicoId: mecanicos[1].id,
+        prioridade: PrioridadeTarefa.ALTA,
+      },
+    }),
+    prisma.tarefaSemanal.create({
+      data: {
+        titulo: "Limpeza da área de serviço",
+        descricao: "Limpar elevadores, chão e bancadas de trabalho",
+        diaSemana: DiaSemana.QUARTA,
+        mecanicoId: mecanicos[2].id,
+        concluida: true,
+        prioridade: PrioridadeTarefa.BAIXA,
+      },
+    }),
+    prisma.tarefaSemanal.create({
+      data: {
+        titulo: "Calibração de equipamentos",
+        descricao: "Calibrar torquímetros e equipamentos de diagnóstico",
+        diaSemana: DiaSemana.QUINTA,
+        mecanicoId: mecanicos[3].id,
+        prioridade: PrioridadeTarefa.ALTA,
+      },
+    }),
+    prisma.tarefaSemanal.create({
+      data: {
+        titulo: "Revisão de veículos em fila",
+        descricao: "Priorizar ordens de serviço pendentes para a semana",
+        diaSemana: DiaSemana.SEXTA,
+        mecanicoId: mecanicos[4].id,
+        prioridade: PrioridadeTarefa.MEDIA,
+      },
+    }),
+  ]);
+
   console.log("Seed concluído:");
   console.log(`  - ${users.length} users`);
   console.log(`  - ${clientes.length} clientes`);
   console.log(`  - ${mecanicos.length} mecânicos`);
   console.log(`  - ${pedidos.length} pedidos`);
   console.log(`  - 5 avaliações`);
+  console.log(`  - ${servicos.length} serviços`);
+  console.log(`  - ${tarefasSemanais.length} tarefas semanais`);
 }
 
 main()

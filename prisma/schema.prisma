@@ -20,6 +20,22 @@ enum PedidoStatus {
   CANCELADO
 }
 
+enum DiaSemana {
+  SEGUNDA
+  TERCA
+  QUARTA
+  QUINTA
+  SEXTA
+  SABADO
+  DOMINGO
+}
+
+enum PrioridadeTarefa {
+  BAIXA
+  MEDIA
+  ALTA
+}
+
 model User {
   id        String   @id @default(uuid())
   nome      String
@@ -63,9 +79,10 @@ model Mecanico {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  user       User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user       User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
   pedidos    Pedido[]
   avaliacoes Avaliacao[]
+  tarefas    TarefaSemanal[]
 
   @@map("mecanicos")
 }
@@ -103,4 +120,33 @@ model Avaliacao {
 
   @@unique([pedidoId])
   @@map("avaliacoes")
+}
+
+model Servico {
+  id               String   @id @default(uuid())
+  nome             String   @unique
+  descricao        String
+  preco            Decimal  @db.Decimal(10, 2)
+  duracaoMinutos   Int      @map("duracao_minutos")
+  ativo            Boolean  @default(true)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("servicos")
+}
+
+model TarefaSemanal {
+  id         String           @id @default(uuid())
+  titulo     String
+  descricao  String
+  diaSemana  DiaSemana        @map("dia_semana")
+  mecanicoId String           @map("mecanico_id")
+  concluida  Boolean          @default(false)
+  prioridade PrioridadeTarefa @default(MEDIA)
+  createdAt  DateTime         @default(now()) @map("created_at")
+  updatedAt  DateTime         @updatedAt @map("updated_at")
+
+  mecanico Mecanico @relation(fields: [mecanicoId], references: [id], onDelete: Cascade)
+
+  @@map("tarefas_semanais")
 }

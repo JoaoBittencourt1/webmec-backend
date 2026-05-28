@@ -4,6 +4,8 @@ import { clienteController } from "../controllers/clienteController";
 import { mecanicoController } from "../controllers/mecanicoController";
 import { pedidoController } from "../controllers/pedidoController";
 import { avaliacaoController } from "../controllers/avaliacaoController";
+import { servicoController } from "../controllers/servicoController";
+import { tarefaSemanalController } from "../controllers/tarefaSemanalController";
 
 const router = Router();
 
@@ -36,5 +38,17 @@ router.get("/avaliacoes/:id", avaliacaoController.getById);
 router.post("/avaliacoes", avaliacaoController.create);
 router.put("/avaliacoes/:id", avaliacaoController.update);
 router.delete("/avaliacoes/:id", avaliacaoController.remove);
+
+router.get("/servicos", servicoController.list);
+router.get("/servicos/:id", servicoController.getById);
+router.post("/servicos", servicoController.create);
+router.put("/servicos/:id", servicoController.update);
+router.delete("/servicos/:id", servicoController.remove);
+
+router.get("/tarefas-semanais", tarefaSemanalController.list);
+router.get("/tarefas-semanais/:id", tarefaSemanalController.getById);
+router.post("/tarefas-semanais", tarefaSemanalController.create);
+router.put("/tarefas-semanais/:id", tarefaSemanalController.update);
+router.delete("/tarefas-semanais/:id", tarefaSemanalController.remove);
 
 export default router;

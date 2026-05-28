@@ -52,6 +52,27 @@ export const createAvaliacaoSchema = z.object({
 
 export const updateAvaliacaoSchema = createAvaliacaoSchema.partial();
 
+export const createServicoSchema = z.object({
+  nome: z.string().min(2),
+  descricao: z.string().min(5),
+  preco: z.number().positive(),
+  duracaoMinutos: z.number().int().positive(),
+  ativo: z.boolean().optional(),
+});
+
+export const updateServicoSchema = createServicoSchema.partial();
+
+export const createTarefaSemanalSchema = z.object({
+  titulo: z.string().min(2),
+  descricao: z.string().min(5),
+  diaSemana: z.enum(["SEGUNDA", "TERCA", "QUARTA", "QUINTA", "SEXTA", "SABADO", "DOMINGO"]),
+  mecanicoId: z.string().uuid(),
+  concluida: z.boolean().optional(),
+  prioridade: z.enum(["BAIXA", "MEDIA", "ALTA"]).optional(),
+});
+
+export const updateTarefaSemanalSchema = createTarefaSemanalSchema.partial();
+
 export const idParamSchema = z.object({
   id: z.string().uuid(),
 });

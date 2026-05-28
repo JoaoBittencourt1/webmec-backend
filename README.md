@@ -10,13 +10,15 @@ Backend Express + TypeScript para gestão de mecânicos, clientes, pedidos e ava
 
 ## Entidades
 
-| Entidade   | Descrição                                      |
-|------------|------------------------------------------------|
-| User       | Usuários do sistema (admin, cliente, mecânico) |
-| Cliente    | Clientes que solicitam serviços                |
-| Mecânico   | Profissionais que executam os serviços         |
-| Pedido     | Ordens de serviço                              |
-| Avaliação  | Notas e comentários dos clientes               |
+| Entidade        | Descrição                                      |
+|-----------------|------------------------------------------------|
+| User            | Usuários do sistema (admin, cliente, mecânico) |
+| Cliente         | Clientes que solicitam serviços                |
+| Mecânico        | Profissionais que executam os serviços         |
+| Pedido          | Ordens de serviço                              |
+| Avaliação       | Notas e comentários dos clientes               |
+| Serviço         | Catálogo de serviços oferecidos                |
+| Tarefa Semanal  | Tarefas recorrentes atribuídas aos mecânicos   |
 
 ## Pré-requisitos
 
@@ -95,6 +97,16 @@ Base URL: `/api`
 | POST   | `/avaliacoes`       | Criar avaliação     |
 | PUT    | `/avaliacoes/:id`   | Atualizar avaliação |
 | DELETE | `/avaliacoes/:id`   | Remover avaliação   |
+| GET    | `/servicos`         | Listar serviços     |
+| GET    | `/servicos/:id`     | Buscar serviço      |
+| POST   | `/servicos`         | Criar serviço       |
+| PUT    | `/servicos/:id`     | Atualizar serviço   |
+| DELETE | `/servicos/:id`     | Remover serviço     |
+| GET    | `/tarefas-semanais` | Listar tarefas      |
+| GET    | `/tarefas-semanais/:id` | Buscar tarefa   |
+| POST   | `/tarefas-semanais` | Criar tarefa        |
+| PUT    | `/tarefas-semanais/:id` | Atualizar tarefa |
+| DELETE | `/tarefas-semanais/:id` | Remover tarefa   |
 
 ## Credenciais de teste (seed)
 
