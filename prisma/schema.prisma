@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  CLIENTE
+  MECANICO
+}
+
+enum PedidoStatus {
+  PENDENTE
+  EM_ANDAMENTO
+  CONCLUIDO
+  CANCELADO
+}
+
+model User {
+  id        String   @id @default(uuid())
+  nome      String
+  email     String   @unique
+  senha     String
+  role      UserRole @default(CLIENTE)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  cliente  Cliente?
+  mecanico Mecanico?
+
+  @@map("users")
+}
+
+model Cliente {
+  id        String   @id @default(uuid())
+  userId    String?  @unique @map("user_id")
+  nome      String
+  email     String   @unique
+  telefone  String
+  cpf       String   @unique
+  endereco  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  pedidos     Pedido[]
+  avaliacoes  Avaliacao[]
+
+  @@map("clientes")
+}
+
+model Mecanico {
+  id            String   @id @default(uuid())
+  userId        String?  @unique @map("user_id")
+  nome          String
+  email         String   @unique
+  telefone      String
+  especialidade String
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user       User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  pedidos    Pedido[]
+  avaliacoes Avaliacao[]
+
+  @@map("mecanicos")
+}
+
+model Pedido {
+  id          String       @id @default(uuid())
+  clienteId   String       @map("cliente_id")
+  mecanicoId  String       @map("mecanico_id")
+  descricao   String
+  status      PedidoStatus @default(PENDENTE)
+  valor       Decimal      @db.Decimal(10, 2)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  cliente    Cliente     @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  mecanico   Mecanico    @relation(fields: [mecanicoId], references: [id], onDelete: Cascade)
+  avaliacoes Avaliacao[]
+
+  @@map("pedidos")
+}
+
+model Avaliacao {
+  id         String   @id @default(uuid())
+  pedidoId   String   @map("pedido_id")
+  clienteId  String   @map("cliente_id")
+  mecanicoId String   @map("mecanico_id")
+  nota       Int
+  comentario String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  pedido   Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  cliente  Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  mecanico Mecanico @relation(fields: [mecanicoId], references: [id], onDelete: Cascade)
+
+  @@unique([pedidoId])
+  @@map("avaliacoes")
+}
