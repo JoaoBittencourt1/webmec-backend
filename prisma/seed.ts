@@ -19,6 +19,7 @@ async function main() {
       data: {
         nome: "Admin Sistema",
         email: "admin@webmec.com",
+        documento: "00000000000",
         senha: senhaHash,
         role: UserRole.ADMIN,
       },
@@ -27,6 +28,7 @@ async function main() {
       data: {
         nome: "Carlos Silva",
         email: "carlos.silva@email.com",
+        documento: "12345678901",
         senha: senhaHash,
         role: UserRole.CLIENTE,
       },
@@ -35,6 +37,7 @@ async function main() {
       data: {
         nome: "Ana Souza",
         email: "ana.souza@email.com",
+        documento: "23456789012",
         senha: senhaHash,
         role: UserRole.CLIENTE,
       },
@@ -43,6 +46,7 @@ async function main() {
       data: {
         nome: "João Mecânico",
         email: "joao.mecanico@webmec.com",
+        documento: "11122233344",
         senha: senhaHash,
         role: UserRole.MECANICO,
       },
@@ -51,6 +55,7 @@ async function main() {
       data: {
         nome: "Maria Mecânica",
         email: "maria.mecanica@webmec.com",
+        documento: "55566677788",
         senha: senhaHash,
         role: UserRole.MECANICO,
       },
@@ -64,7 +69,7 @@ async function main() {
         nome: "Carlos Silva",
         email: "carlos.silva@email.com",
         telefone: "(11) 98765-4321",
-        cpf: "123.456.789-01",
+        cpf: "12345678901",
         endereco: "Rua das Flores, 100 - São Paulo, SP",
       },
     }),
@@ -74,7 +79,7 @@ async function main() {
         nome: "Ana Souza",
         email: "ana.souza@email.com",
         telefone: "(21) 99876-5432",
-        cpf: "234.567.890-12",
+        cpf: "23456789012",
         endereco: "Av. Brasil, 500 - Rio de Janeiro, RJ",
       },
     }),
@@ -83,7 +88,7 @@ async function main() {
         nome: "Pedro Oliveira",
         email: "pedro.oliveira@email.com",
         telefone: "(31) 97654-3210",
-        cpf: "345.678.901-23",
+        cpf: "34567890123",
         endereco: "Rua Minas, 200 - Belo Horizonte, MG",
       },
     }),
@@ -92,7 +97,7 @@ async function main() {
         nome: "Juliana Costa",
         email: "juliana.costa@email.com",
         telefone: "(41) 96543-2109",
-        cpf: "456.789.012-34",
+        cpf: "45678901234",
         endereco: "Rua Paraná, 300 - Curitiba, PR",
       },
     }),
@@ -101,7 +106,7 @@ async function main() {
         nome: "Roberto Lima",
         email: "roberto.lima@email.com",
         telefone: "(51) 95432-1098",
-        cpf: "567.890.123-45",
+        cpf: "56789012345",
         endereco: "Av. Ipiranga, 400 - Porto Alegre, RS",
       },
     }),
@@ -254,6 +259,10 @@ async function main() {
   console.log(`  - ${mecanicos.length} mecânicos`);
   console.log(`  - ${pedidos.length} pedidos`);
   console.log(`  - 5 avaliações`);
+  console.log("");
+  console.log("Credenciais de teste (senha: 123456):");
+  console.log("  Cliente Carlos: CPF 123.456.789-01 ou 12345678901");
+  console.log("  Cliente Ana:    CPF 234.567.890-12 ou 23456789012");
 }
 
 main()

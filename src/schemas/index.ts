@@ -15,9 +15,9 @@ export const createClienteSchema = z.object({
   userId: z.string().uuid().optional(),
   nome: z.string().min(2),
   email: z.string().email(),
-  telefone: z.string().min(8),
+  telefone: z.string().min(8).optional(),
   cpf: z.string().min(11),
-  endereco: z.string().min(5),
+  endereco: z.string().min(5).optional(),
 });
 
 export const updateClienteSchema = createClienteSchema.partial();
@@ -54,4 +54,18 @@ export const updateAvaliacaoSchema = createAvaliacaoSchema.partial();
 
 export const idParamSchema = z.object({
   id: z.string().uuid(),
+});
+
+export const loginSchema = z.object({
+  document: z.string().min(1),
+  password: z.string().min(1),
+});
+
+export const registerSchema = z.object({
+  document: z.string().min(1),
+  password: z.string().min(6),
+});
+
+export const forgotPasswordSchema = z.object({
+  identifier: z.string().min(1),
 });

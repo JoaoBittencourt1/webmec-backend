@@ -24,6 +24,7 @@ model User {
   id        String   @id @default(uuid())
   nome      String
   email     String   @unique
+  documento String?  @unique
   senha     String
   role      UserRole @default(CLIENTE)
   createdAt DateTime @default(now()) @map("created_at")
@@ -40,9 +41,9 @@ model Cliente {
   userId    String?  @unique @map("user_id")
   nome      String
   email     String   @unique
-  telefone  String
+  telefone  String?
   cpf       String   @unique
-  endereco  String
+  endereco  String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
