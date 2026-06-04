@@ -1,68 +1,83 @@
-import { PrismaClient, PedidoStatus, UserRole, DiaSemana, PrioridadeTarefa } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import {
+  PrismaClient,
+  PedidoStatus,
+  UserRole,
+  DiaSemana,
+  PrioridadeTarefa,
+} from "@prisma/client";
+import { auth } from "../src/lib/auth";
 
 const prisma = new PrismaClient();
+
+async function createAuthUser(
+  email: string,
+  password: string,
+  name: string,
+  role: UserRole,
+) {
+  const result = await auth.api.signUpEmail({
+    body: { email, password, name, role },
+  });
+  return result.user;
+}
 
 async function main() {
   console.log("Iniciando seed...");
 
   await prisma.avaliacao.deleteMany();
+  await prisma.favorito.deleteMany();
+  await prisma.agendamento.deleteMany();
   await prisma.tarefaSemanal.deleteMany();
   await prisma.pedido.deleteMany();
   await prisma.servico.deleteMany();
   await prisma.cliente.deleteMany();
   await prisma.mecanico.deleteMany();
+  await prisma.session.deleteMany();
+  await prisma.account.deleteMany();
+  await prisma.verification.deleteMany();
   await prisma.user.deleteMany();
 
-  const senhaHash = await bcrypt.hash("123456", 10);
+  const adminUser = await createAuthUser(
+    "admin@webmec.com",
+    "123456",
+    "Admin Sistema",
+    UserRole.ADMIN,
+  );
 
-  const users = await Promise.all([
-    prisma.user.create({
-      data: {
-        nome: "Admin Sistema",
-        email: "admin@webmec.com",
-        senha: senhaHash,
-        role: UserRole.ADMIN,
-      },
-    }),
-    prisma.user.create({
-      data: {
-        nome: "Carlos Silva",
-        email: "carlos.silva@email.com",
-        senha: senhaHash,
-        role: UserRole.CLIENTE,
-      },
-    }),
-    prisma.user.create({
-      data: {
-        nome: "Ana Souza",
-        email: "ana.souza@email.com",
-        senha: senhaHash,
-        role: UserRole.CLIENTE,
-      },
-    }),
-    prisma.user.create({
-      data: {
-        nome: "João Mecânico",
-        email: "joao.mecanico@webmec.com",
-        senha: senhaHash,
-        role: UserRole.MECANICO,
-      },
-    }),
-    prisma.user.create({
-      data: {
-        nome: "Maria Mecânica",
-        email: "maria.mecanica@webmec.com",
-        senha: senhaHash,
-        role: UserRole.MECANICO,
-      },
-    }),
-  ]);
+  const carlosUser = await createAuthUser(
+    "carlos.silva@email.com",
+    "123456",
+    "Carlos Silva",
+    UserRole.CLIENTE,
+  );
+
+  const anaUser = await createAuthUser(
+    "ana.souza@email.com",
+    "123456",
+    "Ana Souza",
+    UserRole.CLIENTE,
+  );
+
+  const joaoUser = await createAuthUser(
+    "joao.mecanico@webmec.com",
+    "123456",
+    "João Mecânico",
+    UserRole.MECANICO,
+  );
+
+  const mariaUser = await createAuthUser(
+    "maria.mecanica@webmec.com",
+    "123456",
+    "Maria Mecânica",
+    UserRole.MECANICO,
+  );
+
+  const users = [adminUser, carlosUser, anaUser, joaoUser, mariaUser];
 
   const clientes = await Promise.all([
     prisma.cliente.create({
       data: {
-        userId: users[1].id,
+        userId: carlosUser.id,
         nome: "Carlos Silva",
         email: "carlos.silva@email.com",
         telefone: "(11) 98765-4321",
@@ -72,7 +87,7 @@ async function main() {
     }),
     prisma.cliente.create({
       data: {
-        userId: users[2].id,
+        userId: anaUser.id,
         nome: "Ana Souza",
         email: "ana.souza@email.com",
         telefone: "(21) 99876-5432",
@@ -112,20 +127,26 @@ async function main() {
   const mecanicos = await Promise.all([
     prisma.mecanico.create({
       data: {
-        userId: users[3].id,
+        userId: joaoUser.id,
         nome: "João Mecânico",
         email: "joao.mecanico@webmec.com",
         telefone: "(11) 91234-5678",
+        cnpj: "12.345.678/0001-90",
+        endereco: "Rua das Flores, 250 - São Paulo, SP",
         especialidade: "Motor e Transmissão",
+        descricao: "Especialista em motores e transmissões com 15 anos de experiência.",
       },
     }),
     prisma.mecanico.create({
       data: {
-        userId: users[4].id,
+        userId: mariaUser.id,
         nome: "Maria Mecânica",
         email: "maria.mecanica@webmec.com",
         telefone: "(11) 92345-6789",
+        cnpj: "23.456.789/0001-01",
+        endereco: "Av. Paulista, 1000 - São Paulo, SP",
         especialidade: "Elétrica Automotiva",
+        descricao: "Diagnóstico e reparo de sistemas elétricos automotivos.",
       },
     }),
     prisma.mecanico.create({
@@ -133,7 +154,10 @@ async function main() {
         nome: "Ricardo Freitas",
         email: "ricardo.freitas@webmec.com",
         telefone: "(21) 93456-7890",
+        cnpj: "34.567.890/0001-12",
+        endereco: "Rua do Comércio, 50 - Rio de Janeiro, RJ",
         especialidade: "Suspensão e Freios",
+        descricao: "Oficina especializada em freios e suspensão.",
       },
     }),
     prisma.mecanico.create({
@@ -141,7 +165,10 @@ async function main() {
         nome: "Fernanda Alves",
         email: "fernanda.alves@webmec.com",
         telefone: "(31) 94567-8901",
+        cnpj: "45.678.901/0001-23",
+        endereco: "Av. Brasil, 800 - Belo Horizonte, MG",
         especialidade: "Ar Condicionado",
+        descricao: "Manutenção e recarga de ar condicionado automotivo.",
       },
     }),
     prisma.mecanico.create({
@@ -149,7 +176,51 @@ async function main() {
         nome: "Lucas Mendes",
         email: "lucas.mendes@webmec.com",
         telefone: "(41) 95678-9012",
+        cnpj: "56.789.012/0001-34",
+        endereco: "Rua Paraná, 150 - Curitiba, PR",
         especialidade: "Injeção Eletrônica",
+        descricao: "Diagnóstico avançado de injeção eletrônica.",
+      },
+    }),
+  ]);
+
+  await Promise.all([
+    prisma.favorito.create({
+      data: { clienteId: clientes[0].id, mecanicoId: mecanicos[0].id },
+    }),
+    prisma.favorito.create({
+      data: { clienteId: clientes[0].id, mecanicoId: mecanicos[1].id },
+    }),
+    prisma.favorito.create({
+      data: { clienteId: clientes[1].id, mecanicoId: mecanicos[0].id },
+    }),
+  ]);
+
+  await Promise.all([
+    prisma.agendamento.create({
+      data: {
+        mecanicoId: mecanicos[0].id,
+        titulo: "Revisão de motor",
+        descricao: "Cliente agendado para revisão completa",
+        dataInicio: new Date("2026-06-10T09:00:00"),
+        dataFim: new Date("2026-06-10T11:00:00"),
+      },
+    }),
+    prisma.agendamento.create({
+      data: {
+        mecanicoId: mecanicos[0].id,
+        titulo: "Troca de embreagem",
+        dataInicio: new Date("2026-06-11T14:00:00"),
+        dataFim: new Date("2026-06-11T17:00:00"),
+      },
+    }),
+    prisma.agendamento.create({
+      data: {
+        mecanicoId: mecanicos[1].id,
+        titulo: "Diagnóstico elétrico",
+        descricao: "Verificação do sistema elétrico",
+        dataInicio: new Date("2026-06-12T10:00:00"),
+        dataFim: new Date("2026-06-12T12:00:00"),
       },
     }),
   ]);
@@ -344,9 +415,11 @@ async function main() {
   ]);
 
   console.log("Seed concluído:");
-  console.log(`  - ${users.length} users`);
+  console.log(`  - ${users.length} users (senha: 123456)`);
   console.log(`  - ${clientes.length} clientes`);
   console.log(`  - ${mecanicos.length} mecânicos`);
+  console.log(`  - 3 favoritos`);
+  console.log(`  - 3 agendamentos`);
   console.log(`  - ${pedidos.length} pedidos`);
   console.log(`  - 5 avaliações`);
   console.log(`  - ${servicos.length} serviços`);

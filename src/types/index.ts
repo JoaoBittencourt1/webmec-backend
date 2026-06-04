@@ -14,6 +14,12 @@ import {
   updateServicoSchema,
   createTarefaSemanalSchema,
   updateTarefaSemanalSchema,
+  registerSchema,
+  updateMeSchema,
+  fotoPerfilSchema,
+  createAgendamentoSchema,
+  updateAgendamentoSchema,
+  searchMecanicosQuerySchema,
 } from "../schemas";
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;
@@ -30,3 +36,9 @@ export type CreateServicoInput = z.infer<typeof createServicoSchema>;
 export type UpdateServicoInput = z.infer<typeof updateServicoSchema>;
 export type CreateTarefaSemanalInput = z.infer<typeof createTarefaSemanalSchema>;
 export type UpdateTarefaSemanalInput = z.infer<typeof updateTarefaSemanalSchema>;
+export type RegisterInput = z.infer<typeof registerSchema>;
+export type UpdateMeInput = z.infer<typeof updateMeSchema>;
+export type FotoPerfilInput = z.infer<typeof fotoPerfilSchema>;
+export type CreateAgendamentoInput = z.infer<typeof createAgendamentoSchema>;
+export type UpdateAgendamentoInput = z.infer<typeof updateAgendamentoSchema>;
+export type SearchMecanicosQuery = z.infer<typeof searchMecanicosQuerySchema>;

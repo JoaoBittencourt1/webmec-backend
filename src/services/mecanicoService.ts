@@ -1,6 +1,7 @@
 import prisma from "../lib/prisma";
 import { AppError } from "../middleware/errorHandler";
 import { CreateMecanicoInput, UpdateMecanicoInput } from "../types";
+import { SessionUser } from "../lib/auth";
 
 export const mecanicoService = {
   async findAll() {
@@ -8,6 +9,40 @@ export const mecanicoService = {
       include: { user: { select: { id: true, email: true, role: true } } },
       orderBy: { createdAt: "desc" },
     });
+  },
+
+  async searchByEndereco(endereco: string, user?: Pick<SessionUser, "id" | "role">) {
+    const mecanicos = await prisma.mecanico.findMany({
+      where: {
+        endereco: { contains: endereco, mode: "insensitive" },
+      },
+      select: {
+        id: true,
+        nome: true,
+        descricao: true,
+        endereco: true,
+        especialidade: true,
+        telefone: true,
+      },
+      orderBy: { nome: "asc" },
+    });
+
+    if (!user || user.role !== "CLIENTE") {
+      return mecanicos.map((m) => ({ ...m, isFavorito: false }));
+    }
+
+    const cliente = await prisma.cliente.findUnique({ where: { userId: user.id } });
+    if (!cliente) {
+      return mecanicos.map((m) => ({ ...m, isFavorito: false }));
+    }
+
+    const favoritos = await prisma.favorito.findMany({
+      where: { clienteId: cliente.id, mecanicoId: { in: mecanicos.map((m) => m.id) } },
+      select: { mecanicoId: true },
+    });
+    const favoritoIds = new Set(favoritos.map((f) => f.mecanicoId));
+
+    return mecanicos.map((m) => ({ ...m, isFavorito: favoritoIds.has(m.id) }));
   },
 
   async findById(id: string) {

@@ -1,10 +1,21 @@
 import { Request, Response } from "express";
+import { fromNodeHeaders } from "better-auth/node";
+import { auth } from "../lib/auth";
 import { asyncHandler } from "../middleware/errorHandler";
 import { mecanicoService } from "../services/mecanicoService";
-import { createMecanicoSchema, updateMecanicoSchema, idParamSchema } from "../schemas";
+import { createMecanicoSchema, updateMecanicoSchema, idParamSchema, searchMecanicosQuerySchema } from "../schemas";
 
 export const mecanicoController = {
-  list: asyncHandler(async (_req: Request, res: Response) => {
+  list: asyncHandler(async (req: Request, res: Response) => {
+    if (req.query.endereco) {
+      const { endereco } = searchMecanicosQuerySchema.parse({ endereco: req.query.endereco });
+      const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) });
+      const user = session?.user as { id: string; role: string } | undefined;
+      const mecanicos = await mecanicoService.searchByEndereco(endereco, user);
+      res.json(mecanicos);
+      return;
+    }
+
     const mecanicos = await mecanicoService.findAll();
     res.json(mecanicos);
   }),

@@ -37,34 +37,86 @@ enum PrioridadeTarefa {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  nome      String
-  email     String   @unique
-  senha     String
-  role      UserRole @default(CLIENTE)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false) @map("email_verified")
+  image         String?
+  role          UserRole @default(CLIENTE)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
+  sessions Session[]
+  accounts Account[]
   cliente  Cliente?
   mecanico Mecanico?
 
   @@map("users")
 }
 
-model Cliente {
+model Session {
   id        String   @id @default(uuid())
-  userId    String?  @unique @map("user_id")
-  nome      String
-  email     String   @unique
-  telefone  String
-  cpf       String   @unique
-  endereco  String
+  expiresAt DateTime @map("expires_at")
+  token     String   @unique
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  userId    String   @map("user_id")
 
-  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
-  pedidos     Pedido[]
-  avaliacoes  Avaliacao[]
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(uuid())
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                String    @map("user_id")
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+model Verification {
+  id         String    @id @default(uuid())
+  identifier String
+  value      String
+  expiresAt  DateTime  @map("expires_at")
+  createdAt  DateTime? @default(now()) @map("created_at")
+  updatedAt  DateTime? @updatedAt @map("updated_at")
+
+  @@map("verifications")
+}
+
+model Cliente {
+  id         String   @id @default(uuid())
+  userId     String?  @unique @map("user_id")
+  nome       String
+  email      String   @unique
+  telefone   String
+  cpf        String   @unique
+  endereco   String
+  descricao  String?
+  fotoPerfil Bytes?   @map("foto_perfil")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  user       User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  pedidos    Pedido[]
+  avaliacoes Avaliacao[]
+  favoritos  Favorito[]
 
   @@map("clientes")
 }
@@ -75,16 +127,50 @@ model Mecanico {
   nome          String
   email         String   @unique
   telefone      String
+  cnpj          String   @unique
+  endereco      String
   especialidade String
+  descricao     String   @default("")
+  fotoPerfil    Bytes?   @map("foto_perfil")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  user       User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
-  pedidos    Pedido[]
-  avaliacoes Avaliacao[]
-  tarefas    TarefaSemanal[]
+  user         User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  pedidos      Pedido[]
+  avaliacoes   Avaliacao[]
+  tarefas      TarefaSemanal[]
+  favoritos    Favorito[]
+  agendamentos Agendamento[]
 
   @@map("mecanicos")
+}
+
+model Favorito {
+  id         String   @id @default(uuid())
+  clienteId  String   @map("cliente_id")
+  mecanicoId String   @map("mecanico_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  cliente  Cliente  @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  mecanico Mecanico @relation(fields: [mecanicoId], references: [id], onDelete: Cascade)
+
+  @@unique([clienteId, mecanicoId])
+  @@map("favoritos")
+}
+
+model Agendamento {
+  id         String   @id @default(uuid())
+  mecanicoId String   @map("mecanico_id")
+  titulo     String
+  descricao  String?
+  dataInicio DateTime @map("data_inicio")
+  dataFim    DateTime @map("data_fim")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  mecanico Mecanico @relation(fields: [mecanicoId], references: [id], onDelete: Cascade)
+
+  @@map("agendamentos")
 }
 
 model Pedido {

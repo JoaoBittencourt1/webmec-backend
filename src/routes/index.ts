@@ -6,8 +6,27 @@ import { pedidoController } from "../controllers/pedidoController";
 import { avaliacaoController } from "../controllers/avaliacaoController";
 import { servicoController } from "../controllers/servicoController";
 import { tarefaSemanalController } from "../controllers/tarefaSemanalController";
+import { meController } from "../controllers/meController";
+import { registerController } from "../controllers/registerController";
+import { requireAuth, requireRole } from "../middleware/requireAuth";
 
 const router = Router();
+
+router.post("/register", registerController.register);
+
+router.get("/me", requireAuth, meController.getProfile);
+router.patch("/me", requireAuth, meController.updateProfile);
+router.put("/me/foto", requireAuth, meController.updateFoto);
+router.get("/me/foto", requireAuth, meController.getFoto);
+
+router.get("/me/favoritos", requireAuth, requireRole("CLIENTE"), meController.listFavoritos);
+router.post("/me/favoritos/:mecanicoId", requireAuth, requireRole("CLIENTE"), meController.addFavorito);
+router.delete("/me/favoritos/:mecanicoId", requireAuth, requireRole("CLIENTE"), meController.removeFavorito);
+
+router.get("/me/agendamentos", requireAuth, requireRole("MECANICO"), meController.listAgendamentos);
+router.post("/me/agendamentos", requireAuth, requireRole("MECANICO"), meController.createAgendamento);
+router.patch("/me/agendamentos/:id", requireAuth, requireRole("MECANICO"), meController.updateAgendamento);
+router.delete("/me/agendamentos/:id", requireAuth, requireRole("MECANICO"), meController.removeAgendamento);
 
 router.get("/users", userController.list);
 router.get("/users/:id", userController.getById);
